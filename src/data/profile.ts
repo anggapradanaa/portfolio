@@ -38,6 +38,12 @@ import certRevouDataAnalytics from '../assets/certs/revou-data-analytics.jpg';
 import certDicodingSql from '../assets/certs/dicoding-sql.jpg';
 import certDicodingDataScience from '../assets/certs/dicoding-data-science.jpg';
 import certMyskillSql from '../assets/certs/myskill-sql.jpg';
+// Organization logos, original colors (official sites and Wikimedia Commons)
+import logoDicoding from '../assets/logos/dicoding.png';
+import logoAsah from '../assets/logos/asah.png';
+import logoBps from '../assets/logos/bps.png';
+import logoHomeCredit from '../assets/logos/home-credit.png';
+import logoUnnes from '../assets/logos/unnes.png';
 
 export const PLACEHOLDER_LINK = '#';
 
@@ -100,6 +106,7 @@ export type Experience = {
   period: string;
   role: string;
   org: string;
+  logo: ImageMetadata;
   summary: string;
   points: string[];
   links?: Link[];
@@ -110,6 +117,7 @@ export const experience: Experience[] = [
     period: 'May – Oct 2026',
     role: 'Curriculum Developer Intern',
     org: 'Dicoding Indonesia',
+    logo: logoDicoding,
     summary: "Built and taught AI and data curriculum for Dicoding's bootcamps, live sessions, and self-paced classes.",
     points: [
       'Served as a technical instructor for Dicoding Bootcamp Batch 15 (Gen AI Engineer) and Batch 16 (Data Analyst), delivering 120-minute sessions to 40 and 25 participants respectively, with self-developed slides and hands-on labs covering regression, classification, unsupervised learning, and AI-assisted end-to-end data analysis, visualization, and career preparation; received ratings of 4.79/5 and 4.87/5.',
@@ -127,6 +135,7 @@ export const experience: Experience[] = [
     period: 'Aug – Dec 2025',
     role: 'Machine Learning Trainee',
     org: 'ASAH program, Dicoding × Accenture',
+    logo: logoAsah,
     summary: '930+ hours of machine learning, deep learning, and programming training, with an average score above 90/100.',
     points: [
       'Capstone: a CatBoost lead scoring model covering preprocessing, feature engineering, and evaluation, with SHAP explanations so the business side can see what drives each score. Final evaluation score 94/100.',
@@ -138,6 +147,7 @@ export const experience: Experience[] = [
     period: 'Apr – Jul 2025',
     role: 'Statistical Technical Team Intern',
     org: 'BPS Kota Tegal (Statistics Indonesia)',
+    logo: logoBps,
     summary: 'Analysis, visualization, and data processing for official statistics at the Tegal City statistics office.',
     points: [
       "Designed visualizations and infographics of Tegal City's GRDP by expenditure (2020–2024) for official statistical publications.",
@@ -152,6 +162,7 @@ export const experience: Experience[] = [
     period: 'Jan – Feb 2025',
     role: 'Data Scientist Intern',
     org: 'Home Credit Indonesia · Rakamin project-based internship',
+    logo: logoHomeCredit,
     summary: 'A credit scoring model that predicts loan default risk from historical customer data.',
     points: [
       'Ran exploratory data analysis, preprocessing, and feature engineering, then compared Logistic Regression and XGBoost.',
@@ -164,6 +175,7 @@ export const experience: Experience[] = [
     period: 'Jan – Mar 2025',
     role: 'Team Leader, Community Service Program (KKN)',
     org: 'Nyamat Village, Tengaran, Semarang Regency',
+    logo: logoUnnes, // KKN is a Universitas Negeri Semarang program
     summary: 'Led a multidisciplinary team of 11 students through a 58-day program that finished with an evaluation score of 95.',
     points: [
       'Organized and supervised 18 community initiatives together with local authorities and residents.',
@@ -175,6 +187,7 @@ export const experience: Experience[] = [
 export const education = {
   degree: 'Bachelor of Mathematics',
   school: 'Universitas Negeri Semarang',
+  logo: logoUnnes,
   period: '2022 – 2026',
   note: 'GPA 3.85 / 4.00. Coursework in statistics, probability, data mining, time series analysis, database systems, programming algorithms, and discrete mathematics.',
 };

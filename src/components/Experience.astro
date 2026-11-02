@@ -1,6 +1,7 @@
 ---
 import Figure from './Figure.astro';
 import Links from './Links.astro';
+import OrgLogo from './OrgLogo.astro';
 import SectionHead from './SectionHead.astro';
 import { experience, education, awards, cvs } from '../data/profile';
 ---
@@ -17,6 +18,7 @@ import { experience, education, awards, cvs } from '../data/profile';
         experience.map((e) => (
           <li class="grid gap-4 border-t border-line py-8 md:grid-cols-12 md:gap-8">
             <div class="md:col-span-4">
+              <OrgLogo image={e.logo} class="mb-5" />
               <p class="meta">{e.period}</p>
               <h3 class="mt-2 text-xl leading-snug md:text-2xl">{e.role}</h3>
               <p class="mt-1 text-muted">{e.org}</p>
@@ -43,6 +45,7 @@ import { experience, education, awards, cvs } from '../data/profile';
       <div class="md:col-span-4">
         <h3 class="text-xl">Education</h3>
         <div class="mt-4 border-t border-line pt-6">
+          <OrgLogo image={education.logo} class="mb-5" />
           <p class="meta">{education.period}</p>
           <p class="mt-2 text-xl font-medium tracking-[-0.02em] text-ink">{education.degree}</p>
           <p class="mt-0.5 text-muted">{education.school}</p>
