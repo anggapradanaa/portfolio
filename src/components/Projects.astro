@@ -1,0 +1,36 @@
+---
+import Figure from './Figure.astro';
+import Links from './Links.astro';
+import SectionHead from './SectionHead.astro';
+import { projects, profile } from '../data/profile';
+---
+
+<section id="projects" class="page">
+  <div class="section">
+    <SectionHead
+      title="Selected projects"
+      description="Two projects each for AI engineering, data science, and data analysis, all with code and most with a live demo or dashboard. The rest is on my GitHub."
+    />
+
+    <div class="mt-12 grid gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
+      {
+        projects.map((p) => (
+          <article class="flex flex-col">
+            <Figure image={p.image} alt={p.title} caption={p.imageNote} ratio="16/9" />
+            <p class="kicker mt-6">{p.kicker}</p>
+            <h3 class="mt-2 text-2xl leading-tight">{p.title}</h3>
+            <p class="mt-3 flex-1 leading-relaxed text-muted">{p.body}</p>
+            <p class="mt-4 text-base text-muted">{p.stack.join(' · ')}</p>
+            <Links links={p.links} class="mt-6" />
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="mt-16 border-t border-line pt-6">
+      <a href={profile.github} target="_blank" rel="noopener" class="link">
+        More projects on GitHub <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </div>
+</section>

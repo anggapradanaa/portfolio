@@ -1,0 +1,32 @@
+---
+import { about, toolkit } from '../data/profile';
+---
+
+<section id="about" class="page">
+  <div class="section">
+    <div class="grid gap-8 md:grid-cols-12">
+      <div class="md:col-span-5">
+        <p class="kicker">About</p>
+        <h2 class="mt-4 text-3xl md:text-4xl">{about.heading}</h2>
+      </div>
+      <div class="md:col-span-7">
+        <p class="text-2xl leading-snug font-normal tracking-[-0.015em] text-ink">{about.lead}</p>
+        <div class="mt-6 space-y-4 leading-relaxed text-muted">
+          {about.paragraphs.map((p) => <p>{p}</p>)}
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-16 grid gap-x-8 md:grid-cols-3">
+      {
+        toolkit.map((t) => (
+          <div class="border-t border-line py-6">
+            <h3 class="text-xl">{t.role}</h3>
+            <p class="mt-2 leading-relaxed text-muted">{t.body}</p>
+            <p class="mt-4 text-base leading-relaxed text-ink">{t.tools.join(' · ')}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

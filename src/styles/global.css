@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* Text tinted toward the accent (warm brown), not neutral grey */
+  --color-ink: #2a1b14;
+  --color-body: #4a3a32;
+  --color-muted: #7a685e;
+  --color-line: #e9ddd4;
+  --color-rule: #2a1b14;
+  --color-paper: #ffffff;
+  --color-pale: #faf3ee;
+
+  /* Accent: terracotta */
+  --color-accent: #b8461f;
+  --color-accent-dark: #8f3315;
+  --color-accent-pale: #f6e6dc;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    @apply bg-paper font-sans text-[1.0625rem] text-body antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-medium tracking-[-0.025em] text-ink;
+    text-wrap: balance;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    @apply bg-accent-pale text-ink;
+  }
+}
+
+@layer components {
+  /* Content width: 1160px, widening to 1280px on large screens */
+  .page {
+    @apply mx-auto w-full max-w-[1224px] px-5 sm:px-8 min-[1500px]:max-w-[1344px];
+  }
+
+  /* Section opens with a dark hairline, like a chapter break */
+  .section {
+    @apply border-t border-rule pt-8 pb-20 md:pb-28;
+  }
+
+  .kicker {
+    @apply text-sm font-semibold tracking-[0.08em] text-accent uppercase;
+  }
+
+  .meta {
+    @apply text-base text-muted tabular-nums;
+  }
+
+  /* Text link with underline rule and arrow */
+  .link {
+    @apply inline-flex items-center gap-2 border-b border-ink pb-1.5 text-base font-semibold text-ink transition-colors hover:border-accent hover:text-accent;
+  }
+
+  /* Figure caption */
+  .caption {
+    @apply mt-3 text-base text-muted;
+  }
+}

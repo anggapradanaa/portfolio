@@ -1,0 +1,79 @@
+---
+import Figure from './Figure.astro';
+import Links from './Links.astro';
+import SectionHead from './SectionHead.astro';
+import { experience, education, awards, cvs } from '../data/profile';
+---
+
+<section id="experience" class="page">
+  <div class="section">
+    <SectionHead
+      title="Experience"
+      description="Internships and training across education technology, official statistics, and finance."
+    />
+
+    <ul class="mt-12">
+      {
+        experience.map((e) => (
+          <li class="grid gap-4 border-t border-line py-8 md:grid-cols-12 md:gap-8">
+            <div class="md:col-span-4">
+              <p class="meta">{e.period}</p>
+              <h3 class="mt-2 text-xl leading-snug md:text-2xl">{e.role}</h3>
+              <p class="mt-1 text-muted">{e.org}</p>
+            </div>
+            <div class="md:col-span-8">
+              <p class="text-lg leading-relaxed text-ink">{e.summary}</p>
+              <ul class="mt-4 space-y-2.5 leading-relaxed text-muted">
+                {e.points.map((pt) => (
+                  <li class="relative pl-5 before:absolute before:left-0 before:text-line before:content-['–']">{pt}</li>
+                ))}
+              </ul>
+              {e.links && <Links links={e.links} class="mt-5" />}
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="grid gap-4 border-t border-line pt-6 md:grid-cols-12 md:items-baseline md:gap-8">
+      <p class="text-muted md:col-span-4">Download my CV, tailored by role (PDF)</p>
+      <Links links={cvs} class="md:col-span-8" />
+    </div>
+
+    <div class="mt-20 grid gap-12 md:grid-cols-12 md:gap-8">
+      <div class="md:col-span-4">
+        <h3 class="text-xl">Education</h3>
+        <div class="mt-4 border-t border-line pt-6">
+          <p class="meta">{education.period}</p>
+          <p class="mt-2 text-xl font-medium tracking-[-0.02em] text-ink">{education.degree}</p>
+          <p class="mt-0.5 text-muted">{education.school}</p>
+          <p class="mt-3 leading-relaxed text-muted">{education.note}</p>
+        </div>
+      </div>
+      <div class="md:col-span-8">
+        <h3 class="text-xl">Awards</h3>
+        <ul class="mt-4 grid gap-x-8 gap-y-12 border-t border-line pt-6 sm:grid-cols-2">
+          {
+            awards.map((a) => (
+              <li>
+                <Figure
+                  image={a.image}
+                  alt={a.title}
+                  caption={a.caption}
+                  ratio="16/9"
+                  fit="cover"
+                  sizes="(min-width: 768px) 400px, 100vw"
+                />
+                <p class="meta mt-5">{a.date}</p>
+                <p class="mt-1 text-xl leading-snug font-medium tracking-[-0.02em] text-ink">{a.title}</p>
+                <p class="mt-2 leading-relaxed text-muted">{a.note}</p>
+                <a href={a.href} target="_blank" rel="noopener" class="link mt-4">
+                  View certificate <span aria-hidden="true">↗</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

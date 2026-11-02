@@ -1,0 +1,32 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# env
+.env
+.env.production
+
+# logs
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+
+# source documents (CV drafts, internship recap, raw photo) - keep local only
+*.pdf
+Pas foto*.png
+!public/*.pdf
+
+# raw assets from Angga (originals); optimized copies go to src/assets
+bahan/
+
+# local working notes, not part of the site
+CLAUDE.md
+.claude/
+RENCANA-PERBAIKAN.md

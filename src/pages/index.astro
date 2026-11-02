@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Opening from '../components/Opening.astro';
+import About from '../components/About.astro';
+import Projects from '../components/Projects.astro';
+import Teaching from '../components/Teaching.astro';
+import Writing from '../components/Writing.astro';
+import Experience from '../components/Experience.astro';
+import Certifications from '../components/Certifications.astro';
+import Footer from '../components/Footer.astro';
+import { profile, opening } from '../data/profile';
+---
+
+<Layout title={`${profile.name} · AI & Data`} description={opening.bio[0]}>
+  <Header />
+  <main>
+    <Opening />
+    <About />
+    <Experience />
+    <Teaching />
+    <Writing />
+    <Projects />
+    <Certifications />
+  </main>
+  <Footer />
+</Layout>

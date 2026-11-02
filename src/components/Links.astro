@@ -1,0 +1,23 @@
+---
+import type { Link } from '../data/profile';
+
+interface Props {
+  links: Link[];
+  class?: string;
+}
+
+const { links, class: className } = Astro.props;
+---
+
+{
+  links.length > 0 && (
+    <div class:list={['flex flex-wrap gap-x-6 gap-y-3', className]}>
+      {links.map((l) => (
+        <a href={l.href} class="link" target={l.external ? '_blank' : undefined} rel={l.external ? 'noopener' : undefined}>
+          {l.label}
+          <span aria-hidden="true">{l.external ? '↗' : '→'}</span>
+        </a>
+      ))}
+    </div>
+  )
+}

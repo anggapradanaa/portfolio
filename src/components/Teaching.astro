@@ -1,0 +1,45 @@
+---
+import Figure from './Figure.astro';
+import Links from './Links.astro';
+import SectionHead from './SectionHead.astro';
+import { teaching } from '../data/profile';
+---
+
+<section id="teaching" class="page">
+  <div class="section">
+    <SectionHead
+      title="Teaching & speaking"
+      description="Bootcamp classes, live DevCoach sessions, and partner workshops on AI and data, mostly with slides and labs I built myself."
+    />
+
+    {
+      teaching.map((g, gi) => (
+        <div class={gi === 0 ? 'mt-12' : 'mt-20'}>
+          <div class="grid gap-2 border-t border-line pt-6 md:grid-cols-12 md:items-baseline md:gap-8">
+            <h3 class="text-2xl md:col-span-4">{g.heading}</h3>
+            <p class="text-muted md:col-span-8">{g.intro}</p>
+          </div>
+          <div class:list={['mt-8 grid gap-x-8 gap-y-12', g.columns === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2']}>
+            {g.items.map((s) => (
+              <article class="flex flex-col">
+                <Figure
+                  image={s.image}
+                  alt={s.title}
+                  caption={s.caption}
+                  ratio="16/9"
+                  sizes={g.columns === 3 ? '(min-width: 768px) 420px, 100vw' : '(min-width: 768px) 640px, 100vw'}
+                />
+                <p class="kicker mt-6">{s.kicker}</p>
+                <h4 class:list={['mt-2 font-medium tracking-[-0.025em] text-ink', g.columns === 3 ? 'text-xl' : 'text-2xl']}>
+                  {s.title}
+                </h4>
+                <p class="mt-3 flex-1 leading-relaxed text-muted">{s.body}</p>
+                <Links links={s.links} class="mt-6" />
+              </article>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

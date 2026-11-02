@@ -1,0 +1,35 @@
+---
+import { Image } from 'astro:assets';
+import { profile, opening } from '../data/profile';
+---
+
+<section id="top" class="page pt-14 pb-20 md:pt-20 md:pb-28">
+  <div class="grid gap-12 md:grid-cols-12 md:gap-8">
+    <div class="md:col-span-7">
+      <p class="kicker">{profile.role}</p>
+      <h1 class="mt-5 text-[clamp(3rem,6.5vw,5.5rem)] leading-[1.02]">{opening.greeting}</h1>
+      <div class="mt-8 max-w-[38rem] space-y-4 text-lg leading-relaxed">
+        {opening.bio.map((p) => <p>{p}</p>)}
+      </div>
+      <div class="mt-10 flex flex-wrap gap-x-6 gap-y-3">
+        <a href="#projects" class="link">See my projects <span aria-hidden="true">→</span></a>
+        <a href={`mailto:${profile.email}`} class="link">Email me <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+
+    <!-- Round portrait: the only rounded element on the site (Angga's request) -->
+    <div class="w-full max-w-[18rem] justify-self-center md:col-span-5 md:col-start-8 md:max-w-[26rem] md:self-center">
+      <div class="aspect-square overflow-hidden rounded-full bg-accent-pale">
+        <Image
+          src={profile.portrait}
+          alt={`Portrait of ${profile.name}`}
+          widths={[320, 480, 660]}
+          sizes="(min-width: 768px) 416px, 288px"
+          loading="eager"
+          class="block h-full w-full object-cover"
+        />
+      </div>
+    </div>
+  </div>
+
+</section>

@@ -1,0 +1,13 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<div class="grid gap-4 md:grid-cols-12 md:items-baseline">
+  <h2 class="text-3xl md:col-span-5 md:text-4xl">{title}</h2>
+  {description && <p class="max-w-xl text-muted md:col-span-7">{description}</p>}
+</div>

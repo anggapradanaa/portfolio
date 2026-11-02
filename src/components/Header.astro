@@ -1,0 +1,61 @@
+---
+import { profile } from '../data/profile';
+
+const nav = [
+  { href: '#about', label: 'About' },
+  { href: '#experience', label: 'Experience' },
+  { href: '#teaching', label: 'Teaching' },
+  { href: '#writing', label: 'Writing' },
+  { href: '#projects', label: 'Projects' },
+];
+---
+
+<header class="sticky top-0 z-40 bg-paper/95 backdrop-blur-sm">
+  <div class="page">
+    <nav class="flex h-20 items-center justify-between border-b border-line">
+      <a href="#top" class="text-lg font-medium tracking-[-0.02em] text-ink">{profile.wordmark}</a>
+
+      <ul class="hidden gap-8 text-[1.0625rem] md:flex">
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} class="text-body transition-colors hover:text-accent">
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <button type="button" class="text-[1.0625rem] font-medium text-ink md:hidden" aria-expanded="false" data-menu-toggle>
+        Menu
+      </button>
+    </nav>
+
+    <ul class="hidden border-b border-line py-2 md:hidden" data-menu>
+      {
+        nav.map((item) => (
+          <li>
+            <a href={item.href} class="block py-2.5 text-[1.0625rem] text-body">
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+
+  const setOpen = (open: boolean) => {
+    menu?.classList.toggle('hidden', !open);
+    toggle?.setAttribute('aria-expanded', String(open));
+    if (toggle) toggle.textContent = open ? 'Close' : 'Menu';
+  };
+
+  toggle?.addEventListener('click', () => setOpen(menu?.classList.contains('hidden') ?? false));
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+</script>
