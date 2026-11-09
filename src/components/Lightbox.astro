@@ -1,0 +1,341 @@
+---
+// Image viewer for every zoomable Figure ([data-zoom]). One instance, mounted in Layout.
+// The image grows out of its thumbnail and returns to it on close. Prev/next stays within the section.
+---
+
+<dialog class="lightbox" aria-label="Image viewer" data-lightbox>
+  <div class="lb-bg" data-lb-fade></div>
+  <div class="lb-layout">
+    <div class="lb-stage" data-lb-stage>
+      <img class="lb-img" alt="" data-lb-img />
+    </div>
+    <div class="page lb-bar" data-lb-fade>
+      <p class="lb-caption" data-lb-caption></p>
+      <div class="lb-controls">
+        <span class="lb-count" data-lb-count></span>
+        <button type="button" class="lb-btn" data-lb-prev aria-label="Previous image">
+          <span aria-hidden="true">←</span> Prev
+        </button>
+        <button type="button" class="lb-btn" data-lb-next aria-label="Next image">
+          Next <span aria-hidden="true" class="arrow">→</span>
+        </button>
+        <button type="button" class="lb-btn" data-lb-close autofocus>Close</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: hidden;
+    color: var(--color-paper);
+  }
+
+  .lightbox::backdrop {
+    background: transparent;
+  }
+
+  .lb-bg {
+    position: absolute;
+    inset: 0;
+    background: #1f140f;
+  }
+
+  .lb-layout {
+    position: relative;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    height: 100%;
+  }
+
+  .lb-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    padding: 1.25rem 1.25rem 0;
+    cursor: zoom-out;
+    touch-action: pan-y;
+  }
+
+  @media (min-width: 640px) {
+    .lb-stage {
+      padding: 3rem 2rem 0;
+    }
+  }
+
+  .lb-img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    min-width: 0;
+    object-fit: contain;
+    transform-origin: top left;
+    background: var(--color-pale);
+    user-select: none;
+  }
+
+  .lb-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    padding-top: 1.25rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .lb-caption {
+    font-size: 1rem;
+    color: rgb(255 255 255 / 0.85);
+    min-height: 1.5rem;
+  }
+
+  .lb-controls {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    margin-left: auto;
+  }
+
+  .lb-count {
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+    color: rgb(255 255 255 / 0.6);
+  }
+
+  .lb-btn {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-paper);
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid rgb(255 255 255 / 0.5);
+    cursor: pointer;
+    transition:
+      color 0.3s,
+      border-color 0.3s;
+  }
+
+  .lb-btn:hover,
+  .lb-btn:focus-visible {
+    color: var(--color-accent-pale);
+    border-color: var(--color-accent-pale);
+    outline: none;
+  }
+
+  .lb-btn[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]')!;
+  const stage = dialog.querySelector<HTMLElement>('[data-lb-stage]')!;
+  const view = dialog.querySelector<HTMLImageElement>('[data-lb-img]')!;
+  const caption = dialog.querySelector<HTMLElement>('[data-lb-caption]')!;
+  const counter = dialog.querySelector<HTMLElement>('[data-lb-count]')!;
+  const prevBtn = dialog.querySelector<HTMLButtonElement>('[data-lb-prev]')!;
+  const nextBtn = dialog.querySelector<HTMLButtonElement>('[data-lb-next]')!;
+  const closeBtn = dialog.querySelector<HTMLButtonElement>('[data-lb-close]')!;
+  const fades = dialog.querySelectorAll<HTMLElement>('[data-lb-fade]');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+  const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+  let group: HTMLButtonElement[] = [];
+  let index = 0;
+  let current: HTMLButtonElement | null = null;
+  let busy = false;
+
+  const thumbOf = (t: HTMLButtonElement) => t.querySelector('img');
+
+  // Visible box of an image: for object-contain, the letterboxed area, not the whole element
+  function contentRect(img: HTMLImageElement): DOMRect {
+    const r = img.getBoundingClientRect();
+    if (getComputedStyle(img).objectFit !== 'contain' || !img.naturalWidth) return r;
+    const ratio = img.naturalWidth / img.naturalHeight;
+    let w = r.width;
+    let h = r.height;
+    if (ratio > w / h) h = w / ratio;
+    else w = h * ratio;
+    return new DOMRect(r.left + (r.width - w) / 2, r.top + (r.height - h) / 2, w, h);
+  }
+
+  // Transform that makes an element sitting at `to` look like it sits at `from`
+  const flip = (from: DOMRect, to: DOMRect) =>
+    `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width}, ${from.height / to.height})`;
+
+  const onScreen = (r: DOMRect) => r.bottom > 0 && r.top < innerHeight && r.width > 0;
+
+  function show(t: HTMLButtonElement) {
+    if (current) {
+      const prev = thumbOf(current);
+      if (prev) prev.style.visibility = '';
+    }
+    current = t;
+    const thumb = thumbOf(t);
+    const full = t.dataset.zoom ?? '';
+
+    view.width = Number(t.dataset.zoomW);
+    view.height = Number(t.dataset.zoomH);
+    view.alt = t.dataset.zoomAlt ?? '';
+    view.src = thumb?.currentSrc || full;
+
+    // Swap in the sharp version once it has loaded
+    if (full && full !== view.src) {
+      const hi = new Image();
+      hi.src = full;
+      hi.decode()
+        .then(() => {
+          if (current === t) view.src = full;
+        })
+        .catch(() => {});
+    }
+
+    caption.textContent = t.dataset.zoomCaption || t.dataset.zoomAlt || '';
+    const many = group.length > 1;
+    counter.textContent = many ? `${index + 1} / ${group.length}` : '';
+    prevBtn.hidden = !many;
+    nextBtn.hidden = !many;
+  }
+
+  function open(t: HTMLButtonElement) {
+    if (busy || dialog.open) return;
+    const scope = t.closest('section') ?? document;
+    group = Array.from(scope.querySelectorAll<HTMLButtonElement>('[data-zoom]'));
+    index = Math.max(0, group.indexOf(t));
+
+    show(t);
+    document.documentElement.classList.add('lb-lock');
+    dialog.showModal();
+    closeBtn.focus({ preventScroll: true });
+
+    if (reduceMotion.matches) return;
+
+    const thumb = thumbOf(t);
+    fades.forEach((el) => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, easing: 'ease-out' }));
+    if (thumb) {
+      const from = contentRect(thumb);
+      const to = view.getBoundingClientRect();
+      thumb.style.visibility = 'hidden';
+      view.animate([{ transform: flip(from, to) }, { transform: 'none' }], { duration: 560, easing: EASE });
+    }
+  }
+
+  async function close() {
+    if (busy || !dialog.open) return;
+    busy = true;
+    const thumb = current ? thumbOf(current) : null;
+
+    if (!reduceMotion.matches) {
+      const anims = Array.from(fades).map((el) =>
+        el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: 'ease-in', fill: 'forwards' }),
+      );
+      const target = thumb ? contentRect(thumb) : null;
+      const from = view.getBoundingClientRect();
+      anims.push(
+        target && onScreen(target)
+          ? view.animate([{ transform: 'none' }, { transform: flip(target, from) }], {
+              duration: 460,
+              easing: EASE,
+              fill: 'forwards',
+            })
+          : view.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' }),
+      );
+      await Promise.all(anims.map((a) => a.finished));
+      dialog.close();
+      dialog.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+    } else {
+      dialog.close();
+    }
+
+    if (thumb) thumb.style.visibility = '';
+    document.documentElement.classList.remove('lb-lock');
+    current?.focus({ preventScroll: true });
+    current = null;
+    busy = false;
+  }
+
+  async function go(dir: 1 | -1) {
+    if (busy || group.length < 2) return;
+    busy = true;
+    index = (index + dir + group.length) % group.length;
+
+    if (reduceMotion.matches) {
+      show(group[index]);
+    } else {
+      const out = view.animate(
+        [
+          { opacity: 1, transform: 'none' },
+          { opacity: 0, transform: `translateX(${-dir * 48}px)` },
+        ],
+        { duration: 180, easing: 'ease-in', fill: 'forwards' },
+      );
+      await out.finished;
+      show(group[index]);
+      out.cancel();
+      const thumb = thumbOf(group[index]);
+      if (thumb) thumb.style.visibility = 'hidden';
+      await view.animate(
+        [
+          { opacity: 0, transform: `translateX(${dir * 48}px)` },
+          { opacity: 1, transform: 'none' },
+        ],
+        { duration: 320, easing: EASE },
+      ).finished;
+    }
+    busy = false;
+  }
+
+  document.addEventListener('click', (e) => {
+    const t = (e.target as Element).closest<HTMLButtonElement>('[data-zoom]');
+    if (t?.dataset.zoom) open(t);
+  });
+
+  prevBtn.addEventListener('click', () => go(-1));
+  nextBtn.addEventListener('click', () => go(1));
+  closeBtn.addEventListener('click', close);
+
+  // Esc: animate out instead of the instant native close
+  dialog.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    close();
+  });
+
+  dialog.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') go(1);
+    if (e.key === 'ArrowLeft') go(-1);
+  });
+
+  // Swipe left/right on touch screens; a tap closes
+  let startX = 0;
+  let startY = 0;
+  let swiped = false;
+  stage.addEventListener('pointerdown', (e) => {
+    startX = e.clientX;
+    startY = e.clientY;
+    swiped = false;
+  });
+  stage.addEventListener('pointerup', (e) => {
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(e.clientY - startY)) {
+      swiped = true;
+      go(dx < 0 ? 1 : -1);
+    }
+  });
+  stage.addEventListener('click', () => {
+    if (!swiped) close();
+  });
+</script>

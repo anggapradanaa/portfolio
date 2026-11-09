@@ -12,20 +12,23 @@ const nav = [
 
 <header class="sticky top-0 z-40 bg-paper/95 backdrop-blur-sm">
   <div class="page">
-    <nav class="flex h-20 items-center justify-between border-b border-line">
+    <nav class="relative flex h-20 items-center justify-between border-b border-line">
       <a href="#top" class="text-lg font-medium tracking-[-0.02em] text-ink">{profile.wordmark}</a>
 
       <ul class="hidden gap-8 text-[1.0625rem] md:flex">
         {
           nav.map((item) => (
             <li>
-              <a href={item.href} class="text-body transition-colors hover:text-accent">
+              <a href={item.href} class="nav-link text-body transition-colors hover:text-accent" data-spy>
                 {item.label}
               </a>
             </li>
           ))
         }
       </ul>
+
+      <!-- Reading progress: the hairline under the nav fills in ink as the page scrolls -->
+      <span class="progress" aria-hidden="true" data-progress></span>
 
       <button type="button" class="text-[1.0625rem] font-medium text-ink md:hidden" aria-expanded="false" data-menu-toggle>
         Menu
@@ -34,8 +37,8 @@ const nav = [
 
     <ul class="hidden border-b border-line py-2 md:hidden" data-menu>
       {
-        nav.map((item) => (
-          <li>
+        nav.map((item, i) => (
+          <li class="menu-item" style={`--i: ${i}`}>
             <a href={item.href} class="block py-2.5 text-[1.0625rem] text-body">
               {item.label}
             </a>
@@ -58,4 +61,110 @@ const nav = [
 
   toggle?.addEventListener('click', () => setOpen(menu?.classList.contains('hidden') ?? false));
   menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+
+  // Reading progress
+  const bar = document.querySelector<HTMLElement>('[data-progress]');
+  let ticking = false;
+  const update = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    bar?.style.setProperty('--p', String(max > 0 ? Math.min(1, scrollY / max) : 0));
+    ticking = false;
+  };
+  addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) requestAnimationFrame(update);
+      ticking = true;
+    },
+    { passive: true },
+  );
+  addEventListener('resize', update);
+  update();
+
+  // Highlight the nav item of the section in view
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-spy]'));
+  const sections = links
+    .map((a) => document.querySelector<HTMLElement>(a.hash))
+    .filter((el): el is HTMLElement => el !== null);
+  if ('IntersectionObserver' in window) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          links.forEach((a) => {
+            if (a.hash === `#${e.target.id}`) a.setAttribute('aria-current', 'true');
+            else a.removeAttribute('aria-current');
+          });
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((s) => spy.observe(s));
+    // Above the first section nothing is active
+    const top = document.querySelector('#top');
+    if (top)
+      new IntersectionObserver(
+        ([e]) => {
+          if (e.isIntersecting) links.forEach((a) => a.removeAttribute('aria-current'));
+        },
+        { rootMargin: '-45% 0px -50% 0px' },
+      ).observe(top);
+  }
 </script>
+
+<style>
+  .progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: var(--color-rule);
+    transform: scaleX(var(--p, 0));
+    transform-origin: left;
+  }
+
+  .nav-link {
+    position: relative;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s var(--ease-out-soft);
+  }
+
+  .nav-link:hover::after,
+  .nav-link[aria-current]::after {
+    transform: scaleX(1);
+  }
+
+  .nav-link[aria-current] {
+    color: var(--color-ink);
+  }
+
+  .nav-link[aria-current]:hover {
+    color: var(--color-accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-menu]:not(.hidden) .menu-item {
+      animation: menu-in 0.45s var(--ease-out-soft) both;
+      animation-delay: calc(var(--i) * 45ms);
+    }
+  }
+
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+</style>

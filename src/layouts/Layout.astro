@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Lightbox from '../components/Lightbox.astro';
 
 interface Props {
   title: string;
@@ -23,8 +24,43 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    <!-- Motion styles apply only when JS runs, so content is never stuck hidden -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
     <slot />
+    <Lightbox />
   </body>
 </html>
+
+<script>
+  // Scroll reveal: each [data-reveal] element and each .section animates in once.
+  // Elements entering together are staggered in reading order.
+  const targets = document.querySelectorAll<HTMLElement>('[data-reveal], .section');
+
+  if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    targets.forEach((el) => el.classList.add('is-visible'));
+  } else {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entering = entries
+          .filter((e) => e.isIntersecting)
+          .map((e) => e.target as HTMLElement)
+          // Sections and images are left out: images inherit the delay of the item they sit in
+          .filter((el) => !el.matches('.section') && el.dataset.reveal !== 'image')
+          .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+
+        entering.forEach((el, i) => el.style.setProperty('--reveal-delay', `${Math.min(i, 6) * 90}ms`));
+
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('is-visible');
+          observer.unobserve(e.target);
+        });
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+    );
+
+    targets.forEach((el) => observer.observe(el));
+  }
+</script>

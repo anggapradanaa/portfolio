@@ -16,7 +16,7 @@ const label = (name: string) => (/certificate/i.test(name) ? name : `${name} cer
     <ul class="mt-12 grid gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
       {
         certifications.map((c) => (
-          <li class="flex flex-col">
+          <li class="flex flex-col" data-reveal>
             <Figure image={c.image} alt={label(c.name)} ratio="16/9" />
             <p class="meta mt-5">
               Issued {c.issued}
@@ -27,7 +27,7 @@ const label = (name: string) => (/certificate/i.test(name) ? name : `${name} cer
             {c.credentialId && <p class="meta mt-3 break-all">Credential ID {c.credentialId}</p>}
             {c.href && (
               <a href={c.href} target="_blank" rel="noopener" class="link mt-4 self-start">
-                {c.href.includes('drive.google.com') ? 'View certificate' : 'Verify credential'} <span aria-hidden="true">↗</span>
+                {c.href.includes('drive.google.com') ? 'View certificate' : 'Verify credential'} <span aria-hidden="true" class="arrow arrow-ext">↗</span>
               </a>
             )}
           </li>

@@ -15,13 +15,13 @@ import { teaching } from '../data/profile';
     {
       teaching.map((g, gi) => (
         <div class={gi === 0 ? 'mt-12' : 'mt-20'}>
-          <div class="grid gap-2 border-t border-line pt-6 md:grid-cols-12 md:items-baseline md:gap-8">
+          <div class="grid gap-2 border-t border-line pt-6 md:grid-cols-12 md:items-baseline md:gap-8" data-reveal>
             <h3 class="text-2xl md:col-span-4">{g.heading}</h3>
             <p class="text-muted md:col-span-8">{g.intro}</p>
           </div>
           <div class:list={['mt-8 grid gap-x-8 gap-y-12', g.columns === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2']}>
             {g.items.map((s) => (
-              <article class="flex flex-col">
+              <article class="flex flex-col" data-reveal>
                 <Figure
                   image={s.image}
                   alt={s.title}

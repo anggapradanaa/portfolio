@@ -15,7 +15,7 @@ const { links, class: className } = Astro.props;
       {links.map((l) => (
         <a href={l.href} class="link" target={l.external ? '_blank' : undefined} rel={l.external ? 'noopener' : undefined}>
           {l.label}
-          <span aria-hidden="true">{l.external ? '↗' : '→'}</span>
+          <span aria-hidden="true" class:list={['arrow', l.external && 'arrow-ext']}>{l.external ? '↗' : '→'}</span>
         </a>
       ))}
     </div>

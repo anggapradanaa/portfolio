@@ -16,7 +16,7 @@ import { experience, education, awards, cvs } from '../data/profile';
     <ul class="mt-12">
       {
         experience.map((e) => (
-          <li class="grid gap-4 border-t border-line py-8 md:grid-cols-12 md:gap-8">
+          <li class="grid gap-4 border-t border-line py-8 md:grid-cols-12 md:gap-8" data-reveal>
             <div class="md:col-span-4">
               <OrgLogo image={e.logo} class="mb-5" />
               <p class="meta">{e.period}</p>
@@ -36,13 +36,13 @@ import { experience, education, awards, cvs } from '../data/profile';
         ))
       }
     </ul>
-    <div class="grid gap-4 border-t border-line pt-6 md:grid-cols-12 md:items-baseline md:gap-8">
+    <div class="grid gap-4 border-t border-line pt-6 md:grid-cols-12 md:items-baseline md:gap-8" data-reveal>
       <p class="text-muted md:col-span-4">Download my CV, tailored by role (PDF)</p>
       <Links links={cvs} class="md:col-span-8" />
     </div>
 
     <div class="mt-20 grid gap-12 md:grid-cols-12 md:gap-8">
-      <div class="md:col-span-4">
+      <div class="md:col-span-4" data-reveal>
         <h3 class="text-xl">Education</h3>
         <div class="mt-4 border-t border-line pt-6">
           <OrgLogo image={education.logo} class="mb-5" />
@@ -53,11 +53,11 @@ import { experience, education, awards, cvs } from '../data/profile';
         </div>
       </div>
       <div class="md:col-span-8">
-        <h3 class="text-xl">Awards</h3>
+        <h3 class="text-xl" data-reveal>Awards</h3>
         <ul class="mt-4 grid gap-x-8 gap-y-12 border-t border-line pt-6 sm:grid-cols-2">
           {
             awards.map((a) => (
-              <li>
+              <li data-reveal>
                 <Figure
                   image={a.image}
                   alt={a.title}
@@ -70,7 +70,7 @@ import { experience, education, awards, cvs } from '../data/profile';
                 <p class="mt-1 text-xl leading-snug font-medium tracking-[-0.02em] text-ink">{a.title}</p>
                 <p class="mt-2 leading-relaxed text-muted">{a.note}</p>
                 <a href={a.href} target="_blank" rel="noopener" class="link mt-4">
-                  View certificate <span aria-hidden="true">↗</span>
+                  View certificate <span aria-hidden="true" class="arrow arrow-ext">↗</span>
                 </a>
               </li>
             ))

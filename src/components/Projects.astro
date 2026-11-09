@@ -15,7 +15,7 @@ import { projects, profile } from '../data/profile';
     <div class="mt-12 grid gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
       {
         projects.map((p) => (
-          <article class="flex flex-col">
+          <article class="flex flex-col" data-reveal>
             <Figure image={p.image} alt={p.title} caption={p.imageNote} ratio="16/9" />
             <p class="kicker mt-6">{p.kicker}</p>
             <h3 class="mt-2 text-2xl leading-tight">{p.title}</h3>
@@ -27,9 +27,9 @@ import { projects, profile } from '../data/profile';
       }
     </div>
 
-    <div class="mt-16 border-t border-line pt-6">
+    <div class="mt-16 border-t border-line pt-6" data-reveal>
       <a href={profile.github} target="_blank" rel="noopener" class="link">
-        More projects on GitHub <span aria-hidden="true">↗</span>
+        More projects on GitHub <span aria-hidden="true" class="arrow arrow-ext">↗</span>
       </a>
     </div>
   </div>

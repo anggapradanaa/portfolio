@@ -1,6 +1,6 @@
 ---
 import type { ImageMetadata } from 'astro';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 
 interface Props {
   caption?: string;
@@ -27,21 +27,35 @@ const {
   eager = false,
   class: className,
 } = Astro.props;
+
+// Larger version for the lightbox, capped at the source size
+const full = image ? await getImage({ src: image, width: Math.min(image.width, 2000) }) : undefined;
 ---
 
 <figure class={className}>
   {
     image ? (
-      <div class="border border-line bg-pale" style={{ aspectRatio: ratio }}>
-        <Image
-          src={image}
-          alt={alt}
-          widths={[480, 800, 1200]}
-          sizes={sizes}
-          loading={eager ? 'eager' : 'lazy'}
-          class:list={['block w-full', ratio && 'h-full', fit === 'cover' ? 'object-cover' : 'object-contain']}
-          style={{ objectPosition: position }}
-        />
+      <div class="overflow-hidden border border-line bg-pale" style={{ aspectRatio: ratio }} data-reveal="image">
+        <button
+          type="button"
+          class="zoom-trigger block h-full w-full"
+          aria-label={alt ? `Enlarge image: ${alt}` : 'Enlarge image'}
+          data-zoom={full?.src}
+          data-zoom-w={image.width}
+          data-zoom-h={image.height}
+          data-zoom-alt={alt}
+          data-zoom-caption={caption}
+        >
+          <Image
+            src={image}
+            alt={alt}
+            widths={[480, 800, 1200]}
+            sizes={sizes}
+            loading={eager ? 'eager' : 'lazy'}
+            class:list={['block w-full', ratio && 'h-full', fit === 'cover' ? 'object-cover' : 'object-contain']}
+            style={{ objectPosition: position }}
+          />
+        </button>
       </div>
     ) : (
       <div

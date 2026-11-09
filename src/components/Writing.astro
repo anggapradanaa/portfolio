@@ -11,7 +11,7 @@ import { writing } from '../data/profile';
     <ul class="mt-12">
       {
         writing.map((w) => (
-          <li class="grid gap-6 border-t border-line pt-8 md:grid-cols-12 md:gap-8">
+          <li class="grid gap-6 border-t border-line pt-8 md:grid-cols-12 md:gap-8" data-reveal>
             <Figure
               image={w.image}
               alt={w.title}
@@ -31,7 +31,7 @@ import { writing } from '../data/profile';
               </h3>
               <p class="mt-4 max-w-2xl leading-relaxed text-muted">{w.body}</p>
               <a href={w.href} target="_blank" rel="noopener" class="link mt-6">
-                {w.cta} <span aria-hidden="true">↗</span>
+                {w.cta} <span aria-hidden="true" class="arrow arrow-ext">↗</span>
               </a>
             </div>
           </li>

@@ -1,25 +1,38 @@
 ---
 import { Image } from 'astro:assets';
 import { profile, opening } from '../data/profile';
+
+// Headline words rise from behind a mask on load
+const words = opening.greeting.split(' ');
 ---
 
 <section id="top" class="page pt-14 pb-20 md:pt-20 md:pb-28">
   <div class="grid gap-12 md:grid-cols-12 md:gap-8">
     <div class="md:col-span-7">
-      <p class="kicker">{profile.role}</p>
-      <h1 class="mt-5 text-[clamp(3rem,6.5vw,5.5rem)] leading-[1.02]">{opening.greeting}</h1>
+      <p class="kicker" data-intro style="--i: 0">{profile.role}</p>
+      <h1 class="mt-5 text-[clamp(3rem,6.5vw,5.5rem)] leading-[1.02]" aria-label={opening.greeting}>
+        {
+          words.map((w, i) => (
+            <>
+              <span class="intro-word" aria-hidden="true">
+                <span style={`--w: ${i}`}>{w}</span>
+              </span>{' '}
+            </>
+          ))
+        }
+      </h1>
       <div class="mt-8 max-w-[38rem] space-y-4 text-lg leading-relaxed">
-        {opening.bio.map((p) => <p>{p}</p>)}
+        {opening.bio.map((p, i) => <p data-intro style={`--i: ${i + 3}`}>{p}</p>)}
       </div>
-      <div class="mt-10 flex flex-wrap gap-x-6 gap-y-3">
-        <a href="#projects" class="link">See my projects <span aria-hidden="true">→</span></a>
-        <a href={`mailto:${profile.email}`} class="link">Email me <span aria-hidden="true">↗</span></a>
+      <div class="mt-10 flex flex-wrap gap-x-6 gap-y-3" data-intro style={`--i: ${opening.bio.length + 3}`}>
+        <a href="#projects" class="link">See my projects <span aria-hidden="true" class="arrow">→</span></a>
+        <a href={`mailto:${profile.email}`} class="link">Email me <span aria-hidden="true" class="arrow arrow-ext">↗</span></a>
       </div>
     </div>
 
     <!-- Round portrait: the only rounded element on the site (Angga's request) -->
     <div class="w-full max-w-[18rem] justify-self-center md:col-span-5 md:col-start-8 md:max-w-[26rem] md:self-center">
-      <div class="aspect-square overflow-hidden rounded-full bg-accent-pale">
+      <div class="aspect-square overflow-hidden rounded-full bg-accent-pale" data-intro="portrait">
         <Image
           src={profile.portrait}
           alt={`Portrait of ${profile.name}`}
